@@ -1,0 +1,30 @@
+{
+ "month": "202310",
+ "csv_files": 4,
+ "headers": [
+  "ride_id,rideable_type,started_at,ended_at,start_station_name,start_station_id,end_station_name,end_station_id,start_lat,start_lng,end_lat,end_lng,member_casual"
+ ],
+ "header_is_standard": true,
+ "rows": 3725334,
+ "line_count_rows": 3725334,
+ "distinct_ride_ids": 3725334,
+ "bad_started_at": 0,
+ "bad_ended_at": 0,
+ "negative_duration": 0,
+ "first_start": "2023-06-16 22:18:47.941",
+ "last_start": "2023-10-31 23:58:51.413",
+ "started_outside_month": 1259,
+ "rideable_types": {
+  "classic_bike": 1724361,
+  "electric_bike": 2000973
+ },
+ "member_casual_values": {
+  "casual": 713028,
+  "member": 3012306
+ },
+ "started_at_lengths": {
+  "23": 3725334
+ },
+ "zip_bytes": 729415015,
+ "zip_sha256": "9a97e87cad0fc536be49de8085037d988b9f8b5706bbc4ee5e52415d68fbfd9e"
+}
