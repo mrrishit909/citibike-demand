@@ -1,0 +1,10 @@
+comparison,reference,candidate,mean_abs_error_gain,dm_t,dm_p
+calendar regression vs seasonal naive with level,snl,ols_cal,3292.0600455900285,2.893942578658251,0.0038043772689739914
+observed weather vs calendar only (regression),ols_cal,ols_all,6015.740215956624,3.9569611369595057,7.590927467985516e-05
+climatology vs calendar only (regression),ols_cal,ols_all_clim,199.94947596340828,0.4874794001197347,0.6259186377161348
+last week vs calendar only (regression),ols_cal,ols_all_week,-2895.6125335647203,-2.2447999722159375,0.024780976566455778
+observed weather vs calendar only (boosting),gbm_cal,gbm_all,9468.018987688098,7.254825807374285,4.0217907742455945e-13
+climatology vs calendar only (boosting),gbm_cal,gbm_all_clim,-2484.4091928864573,-1.9687137069798513,0.04898597638458988
+"boosting vs regression, observed weather",ols_all,gbm_all,1831.5690056553847,1.7962130514608858,0.07246063980181593
+"boosting vs regression, climatology",ols_all_clim,gbm_all_clim,-4305.068434925956,-3.5124231361535485,0.00044404042449031376
+"boosting vs regression, calendar only",ols_cal,gbm_cal,-1620.7097660760903,-1.7171926814113592,0.08594397231458367

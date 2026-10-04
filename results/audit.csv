@@ -1,0 +1,29 @@
+check,value
+monthly files counted,37
+CSV files inside them,145
+trip rows in all files,126997688
+months whose header is not the standard 13 columns,0
+rows with duplicate ride_id,0
+rows with unreadable start time,0
+rows with unreadable end time,0
+rows with end before start,1125
+rows lasting 24 hours or more,47300
+rows under 60 seconds or without an end time,1317
+rows started outside the file's month,20410
+rows with no start station,69638
+distinct bike types in 2023-2025 files,2
+distinct rider types,2
+months where started_at has a different length,0
+trips 2023-01-01 to 2025-12-31,125181287
+days in the study window,1096
+days with no count,0
+days where member + casual differs from trips,0
+days where classic + electric differs from trips,0
+test days,731
+test months,24
+holiday dates in the test window,24
+storm days in the test window,29
+"weather values missing in the study window (TMAX, TMIN, PRCP, SNOW)",0
+snow-depth values missing in the study window,1
+quality-flagged weather values in the study window,0
+quality-flagged values 1993-2022 left out of the normals,3
