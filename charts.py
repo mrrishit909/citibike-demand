@@ -3,6 +3,7 @@ from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -25,6 +26,10 @@ COL = {"snl": DIM, "sn": "#5a5a58", "ols_cal": GRAY, "ols_all": GREEN, "ols_all_
 
 def sc(t, m, k="mape", per="all"):
     return float(SC[(SC.target == t) & (SC.model == m) & (SC.period == per)][k].iloc[0])
+
+
+def dates(ax):
+    ax.xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=0, interval=3)); ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %-d")); ax.tick_params(axis="x", labelsize=9)
 
 
 def save(fig, name):
@@ -52,7 +57,7 @@ def models(axes):
     ax = axes[1]; x = np.arange(len(FO))
     for k in ("snl", "ols_cal", "ols_all_clim", "ols_all"):
         ax.plot(x, FO[k], color=COL[k], linewidth=2 if k != "snl" else 1.6, label=LAB[k], linestyle="--" if k == "snl" else "-")
-    ax.set_xticks(x[::3]); ax.set_xticklabels([m[2:] for m in FO["month"]][::3], fontsize=9); ax.set_ylabel("mean absolute % error in the month"); ax.set_ylim(0, None); ax.legend(frameon=False, labelcolor=INK, fontsize=8, loc="upper right"); ax.grid(axis="x", visible=False); ax.set_title("Month by month, regression", fontsize=12)
+    ax.set_xticks(x[::3]); ax.set_xticklabels([m[2:] for m in FO["month"]][::3], fontsize=9); ax.set_ylabel("mean absolute % error in the month"); ax.set_ylim(0, None); ax.legend(frameon=False, labelcolor=INK, fontsize=8, loc="upper left"); ax.set_ylim(0, 75); ax.grid(axis="x", visible=False); ax.set_title("Month by month, regression", fontsize=12)
 
 
 def ablation(axes):
@@ -70,14 +75,13 @@ def segments(axes):
     ax = axes[0]; segs = ["holiday", "storm (>= 1 inch rain or snow)", "other days"]; names = ["holidays", "storm days", "other days"]; ms = ["ols_cal", "ols_all_clim", "ols_all"]; x = np.arange(len(segs)); w = 0.27
     g = SG[SG.target == "total"]
     for dx, m in zip((-w, 0, w), ms):
-        v = [float(g[(g.segment == s) & (g.model == m)]["mape"].iloc[0]) for s in segs]; ax.bar(x + dx, v, width=w * 0.92, color=COL[m], label=LAB[m])
+        v = [float(g[(g.segment == s) & (g.model == m)]["mape"].iloc[0]) for s in segs]; ax.bar(x + dx, v, width=w * 0.92, color=COL[m], label=LAB[m].replace("calendar + ", "+ "))
         for xi, vi in zip(x + dx, v):
             ax.text(xi, vi + 1, f"{vi:.0f}", ha="center", fontsize=8.5, color=INK)
     n = [int(g[(g.segment == s) & (g.model == "ols_cal")]["n"].iloc[0]) for s in segs]; ax.set_xticks(x); ax.set_xticklabels([f"{a}\n({b} days)" for a, b in zip(names, n)], fontsize=9); ax.grid(axis="x", visible=False); ax.set_ylabel("mean absolute % error"); ax.legend(frameon=False, labelcolor=INK, fontsize=8.5, loc="upper right"); ax.set_title("Regression error by kind of day", fontsize=12)
     ax = axes[1]; d = OP[OP.target == "total"].copy(); d["date"] = pd.to_datetime(d["date"]); d = d[(d.date >= "2025-03-01") & (d.date < "2025-06-01")]
     ax.plot(d["date"], d["actual"] / 1000, color=INK, linewidth=1.8, label="actual"); ax.plot(d["date"], d["ols_all_clim"] / 1000, color=BLUE, linewidth=1.6, label="normal weather"); ax.plot(d["date"], d["ols_all"] / 1000, color=GREEN, linewidth=1.6, label="observed weather")
-    ax.set_ylabel("trips per day (thousands)"); ax.legend(frameon=False, labelcolor=INK, fontsize=8.5, loc="lower right", ncol=3); ax.tick_params(axis="x", labelsize=9); ax.set_ylim(0, None); ax.set_title("Spring 2025, regression forecasts", fontsize=12)
-    for lab in ax.get_xticklabels(): lab.set_rotation(0)
+    ax.set_ylabel("trips per day (thousands)"); ax.legend(frameon=False, labelcolor=INK, fontsize=8.5, loc="lower right", ncol=3); dates(ax); ax.set_ylim(0, None); ax.set_title("Spring 2025, regression forecasts", fontsize=12)
 
 
 def riders(axes):
@@ -91,7 +95,7 @@ def riders(axes):
     for dy, t, c, lab in ((h / 2 + 0.02, "member", BLUE, "members"), (-h / 2 - 0.02, "casual", ORANGE, "casual riders")):
         d = SE[SE.target == t].set_index("effect"); v = np.array([d.loc[e, "pct_change"] for e, _ in eff]); lo = np.array([d.loc[e, "ci_low_pct"] for e, _ in eff]); hi = np.array([d.loc[e, "ci_high_pct"] for e, _ in eff])
         ax.barh(y + dy, v, height=h, color=c, label=lab); ax.errorbar(v, y + dy, xerr=[v - lo, hi - v], fmt="none", ecolor=INK, elinewidth=1, capsize=2)
-    ax.axvline(0, color=DIM, linewidth=0.9); ax.set_yticks(y); ax.set_yticklabels([n for _, n in eff], fontsize=9); ax.set_xlabel("change in trips, % (95% interval)"); ax.grid(axis="y", visible=False); ax.legend(frameon=False, labelcolor=INK, fontsize=8.5, loc="lower right"); ax.set_title("What the weather does to a day", fontsize=12)
+    ax.axvline(0, color=DIM, linewidth=0.9); ax.set_yticks(y); ax.set_yticklabels([n for _, n in eff], fontsize=9); ax.set_xlabel("change in trips, % (95% interval)"); ax.grid(axis="y", visible=False); ax.legend(frameon=False, labelcolor=INK, fontsize=8.5, loc="lower left"); ax.set_title("What the weather does to a day", fontsize=12)
 
 
 def main():
@@ -104,9 +108,9 @@ def main():
     a.set_yticks(y); a.set_yticklabels([n for n, *_ in keys], fontsize=11.5); a.set_xlim(0, max(v) * 1.2); a.set_xlabel("mean absolute % error of daily trips, 24 test months"); a.grid(axis="y", visible=False); a.set_title("Regression, one month ahead, by the weather it is given", fontsize=14)
     d = OP[OP.target == "total"].copy(); d["date"] = pd.to_datetime(d["date"]); d = d[(d.date >= "2025-03-01") & (d.date < "2025-06-01")]
     b.plot(d["date"], d["actual"] / 1000, color=INK, linewidth=2, label="actual"); b.plot(d["date"], d["ols_all_clim"] / 1000, color=BLUE, linewidth=1.8, label="forecast with normal weather"); b.plot(d["date"], d["ols_all"] / 1000, color=GREEN, linewidth=1.8, label="forecast with observed weather")
-    b.set_ylabel("trips per day (thousands)"); b.set_ylim(0, None); b.legend(frameon=False, labelcolor=INK, fontsize=10, loc="lower right"); b.set_title("Spring 2025: the storms are in the weather, not the calendar", fontsize=14)
+    dates(b); b.set_ylabel("trips per day (thousands)"); b.set_ylim(0, None); b.legend(frameon=False, labelcolor=INK, fontsize=10, loc="lower right"); b.set_title("Spring 2025: the storms are in the weather, not the calendar", fontsize=14)
     ol, oc, oo = sc("total", "ols_cal"), sc("total", "ols_all_clim"), sc("total", "ols_all")
-    fig.suptitle(f"Weather cuts the daily forecast error from {ol:.0f}% to {oo:.0f}% only if you already know it: with the normal weather the error is {oc:.0f}%", x=0.01, ha="left", fontsize=19, color=INK, y=0.98)
+    fig.suptitle(f"Observed weather cuts the daily forecast error from {ol:.0f}% to {oo:.0f}%; the normal weather only to {oc:.0f}%", x=0.01, ha="left", fontsize=19, color=INK, y=0.98)
     fig.tight_layout(rect=(0, 0, 1, 0.94)); fig.savefig(HERE / "charts" / "00_cover.png", dpi=100); plt.close(fig)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.9)); level(axes); save(fig, "01_level.png")
     fig, axes = plt.subplots(1, 2, figsize=(10, 4.0)); models(axes); save(fig, "02_models.png")
